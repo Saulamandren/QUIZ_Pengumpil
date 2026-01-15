@@ -83,7 +83,7 @@ jobs:
       - name: Wait for MySQL
         run: |
           for i in {1..30}; do
-            mysqladmin ping -h 127.0.0.1 -uroot -p2kJ(d2Fyr1Vp && break
+            mysqladmin ping -h 127.0.0.1 -uroot -p"2kJ(d2Fyr1Vp" && break
             sleep 2
           done
 
