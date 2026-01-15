@@ -4,7 +4,7 @@ import pytest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options
 
 
 BASE_URL = os.getenv("BASE_URL", "http://127.0.0.1:8000")
@@ -14,19 +14,22 @@ os.makedirs(SCREENSHOT_DIR, exist_ok=True)
 
 
 # ============================
-# Setup Chrome Driver (CI Safe)
+# Setup Chrome Driver (CI SAFE)
 # ============================
 def setup_driver():
-    options = webdriver.ChromeOptions()
-    options.add_argument("--headless=new")      # WAJIB untuk CI
-    options.add_argument("--no-sandbox")        # WAJIB di GitHub Actions
+    options = Options()
+
+    # WAJIB untuk GitHub Actions
+    options.add_argument("--headless=new")
+    options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-gpu")
     options.add_argument("--window-size=1920,1080")
 
-    return webdriver.Chrome(
-        service=Service(ChromeDriverManager().install()),
-        options=options
-    )
+    # Chromedriver bawaan Linux CI
+    service = Service("/usr/bin/chromedriver")
+
+    return webdriver.Chrome(service=service, options=options)
 
 
 def take_screenshot(driver, name):
@@ -75,16 +78,16 @@ def test_login_wrong_password():
     driver.quit()
 
 
-def test_login_success():
+def test_login_short_password():
     driver = setup_driver()
     driver.get(f"{BASE_URL}/login.php")
 
     driver.find_element(By.NAME, "username").send_keys("ra")
     driver.find_element(By.NAME, "password").send_keys("123")
     driver.find_element(By.NAME, "submit").click()
-    time.sleep(3)
+    time.sleep(2)
 
-    take_screenshot(driver, "login_success")
+    take_screenshot(driver, "login_short_password")
     driver.quit()
 
 
