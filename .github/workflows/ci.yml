@@ -128,7 +128,7 @@ jobs:
       # ===========================
       - name: Run Selenium Test
         run: |
-          pytest tests/test_auth_full_cases.py
+          pytest tests
 
 
       # ===========================
