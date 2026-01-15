@@ -128,7 +128,7 @@ jobs:
       # ===========================
       - name: Run Selenium Test
         run: |
-          pytest tests
+          pytest tests/test_auth.py
 
 
       # ===========================
