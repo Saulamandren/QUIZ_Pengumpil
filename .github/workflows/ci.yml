@@ -14,24 +14,27 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: rootpass
+          MYSQL_ROOT_PASSWORD: 2kJ(d2Fyr1Vp
           MYSQL_DATABASE: quiz_pengupil
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping -h localhost -uroot -prootpass"
+          --health-cmd="mysqladmin ping -h 127.0.0.1"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=20
+          --health-retries=5
 
     env:
       DB_HOST: 127.0.0.1
       DB_USER: root
-      DB_PASS: rootpass
+      DB_PASS: 2kJ(d2Fyr1Vp
       DB_NAME: quiz_pengupil
       BASE_URL: http://127.0.0.1:8000
 
     steps:
+      # ===========================
+      # Checkout repository
+      # ===========================
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -43,6 +46,10 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.2
+          extensions: mysqli
+          tools: composer
+
+
       # ===========================
       # Setup Python
       # ===========================
@@ -53,59 +60,58 @@ jobs:
 
 
       # ===========================
-      # Install dependencies
+      # Install Python dependencies
       # ===========================
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
-          pip install selenium pytest webdriver-manager
+          pip install -r requirements.txt
 
 
       # ===========================
       # Install MySQL client
       # ===========================
-      - name: Install MySQL client
+      - name: Install MySQL Client
         run: |
           sudo apt-get update
           sudo apt-get install -y mysql-client
 
 
       # ===========================
-      # Wait MySQL
+      # Wait MySQL Ready
       # ===========================
-      - name: Wait MySQL ready
+      - name: Wait for MySQL
         run: |
-          for i in {1..40}; do
-            mysqladmin ping -h 127.0.0.1 -uroot -prootpass && break
-            sleep 3
+          for i in {1..30}; do
+            mysqladmin ping -h 127.0.0.1 -uroot -p2kJ(d2Fyr1Vp && break
+            sleep 2
           done
 
 
       # ===========================
       # Import Database
       # ===========================
-      - name: Import DB
+      - name: Import database
         run: |
-          mysql -h 127.0.0.1 -uroot -prootpass quiz_pengupil < db/quiz_pengupil.sql
+          mysql -h 127.0.0.1 -uroot -p2kJ(d2Fyr1Vp quiz_pengupil < db/quiz_pengupil.sql
 
 
       # ===========================
       # Configure koneksi.php
       # ===========================
-      - name: Configure koneksi.php
+      - name: Configure DB connection
         run: |
           sed -i 's/localhost/127.0.0.1/g' koneksi.php
-          sed -i 's/"root", "",/"root", "rootpass",/g' koneksi.php
+          sed -i 's/"root", "",/"root", "2kJ(d2Fyr1Vp",/g' koneksi.php
 
 
       # ===========================
       # Install Chrome
       # ===========================
-      - name: Install Chrome
+      - name: Install Google Chrome
         run: |
           sudo apt-get update
-          sudo apt-get install -y google-chrome-stable chromium-chromedriver
-          sudo ln -sf /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver
+          sudo apt-get install -y google-chrome-stable
 
 
       # ===========================
@@ -120,9 +126,9 @@ jobs:
       # ===========================
       # Run Selenium Tests
       # ===========================
-      - name: Run Selenium
+      - name: Run Selenium Test
         run: |
-          pytest tests/test_auth.py
+          pytest tests/test_auth_full_cases.py
 
 
       # ===========================
