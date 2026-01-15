@@ -93,7 +93,7 @@ jobs:
       # ===========================
       - name: Import database
         run: |
-          mysql -h 127.0.0.1 -uroot -p2kJ(d2Fyr1Vp quiz_pengupil < db/quiz_pengupil.sql
+          mysql -h 127.0.0.1 -uroot -p"2kJ(d2Fyr1Vp" quiz_pengupil < db/quiz_pengupil.sql
 
 
       # ===========================
