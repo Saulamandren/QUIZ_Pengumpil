@@ -1,0 +1,58 @@
+name: CI - Quiz Pengupil Automation
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: quiz_pengupil
+        ports:
+          - 3306:3306
+
+    env:
+      DB_HOST: 127.0.0.1
+      DB_USER: root
+      DB_PASS: 2kJ(d2Fyr1Vp
+      DB_NAME: quiz_pengupil
+      BASE_URL: http://127.0.0.1:8000
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Install deps
+        run: |
+          pip install -r requirements.txt
+
+      - name: Import database
+        run: |
+          mysql -h 127.0.0.1 -uroot -proot quiz_pengupil < db/*.sql
+
+      - name: Stub DB connection
+        run: |
+          cp ci/koneksi_stub.php koneksi.php
+
+      - name: Start PHP Server
+        run: |
+          php -S 127.0.0.1:8000 -t . &
+
+      - name: Run Selenium Test
+        run: |
+          pytest
