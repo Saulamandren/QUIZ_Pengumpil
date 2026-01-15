@@ -82,10 +82,20 @@ jobs:
       # ===========================
       - name: Wait for MySQL
         run: |
-          for i in {1..30}; do
-            mysqladmin ping -h 127.0.0.1 -uroot -p2kJ(d2Fyr1Vp && break
+          i=0
+          while [ $i -lt 30 ]; do
+            if mysqladmin ping -h 127.0.0.1 -uroot -p2kJ(d2Fyr1Vp; then
+              echo "MySQL is ready!"
+              break
+            fi
+            echo "Waiting for MySQL to be ready..."
+            i=$((i+1))
             sleep 2
           done
+          if [ $i -eq 30 ]; then
+            echo "MySQL failed to start in time."
+            exit 1
+          fi
 
 
       # ===========================
