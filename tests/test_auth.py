@@ -4,7 +4,6 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.options import Options
 
 BASE_URL = "http://localhost:8000"
 SHOT_DIR = "tests/screenshots"
@@ -12,14 +11,9 @@ os.makedirs(SHOT_DIR, exist_ok=True)
 
 
 def setup_driver():
-    options = Options()
-    options.add_argument("--headless=new")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--window-size=1920,1080")
-
-    service = Service("/usr/bin/chromedriver")
-    return webdriver.Chrome(service=service, options=options)
+    options = webdriver.ChromeOptions()
+    options.add_argument("--start-maximized")
+    return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
 
 def shot(driver, name):
